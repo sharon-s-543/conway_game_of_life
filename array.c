@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-
+void print_matrix(int matrix[],int dim);
 int count_alive(int matrix[],int dim,int row,int column);
-
+int* new_gen(int matrix[],int new_matrix[],int dim);
 
 int main(){
 
@@ -32,15 +32,19 @@ int main(){
 // ==========================================
 
 	int *cells=malloc(n_cells*sizeof(int));
-	int x,y;
+	if(cells==NULL){
+		printf("Memory allocation failed.");
+		return 1;
+	}
 
+	int x=0; int y=0;
 	for(int i=0;i<2*n_cells;i+=2){
 		printf("Enter cell index (comma separated): ");
 		// scanf(" %d, %d",&x,&y);
-		if(scanf(" %d, %d",&x,&y)!=1){
+		if(scanf(" %d, %d",&x,&y)!=2){
 			fprintf(stderr,"Invalid input.\n");
 			return 1;
-		}
+		} 
 		
 		if(x>=0 && x<dim && y>=0 && y<dim){
 			cells[i]=x;
@@ -60,7 +64,7 @@ int main(){
 	int *matrix=calloc(dim*dim,sizeof(int));
 
 	if(matrix==NULL){
-		printf("Memory allocation failed.");
+		printf("Memory allocation failed.\n");
 		return 1;
 	}
 
@@ -81,13 +85,58 @@ int main(){
 	cells=NULL;
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+// PRINTING THE MATRIX
 
+	/*
 	for(int i=0;i<dim;i++){
 	for(int j=0;j<dim;j++){
 		printf("%d ",matrix[i*dim+j]);		}
-		printf("\n");                           }                        
+		printf("\n");              
+	}                        
 	printf("\n");
+	*/
 
+	print_matrix(matrix,dim);
+	printf("================\n");
+
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+	int *new_matrix=malloc(dim*dim*sizeof(int));
+	
+	if(new_matrix==NULL){
+		printf("Memory allocation failed.\n");
+		return 1;
+	}
+
+	//[: new_gen() function :]
+	
+	// matrix
+	// new_matrix
+	
+	print_matrix(matrix,dim);
+
+	/*
+	int k=0;
+	while(k<5){
+		print_matrix(new_gen(matrix,new_matrix,dim),dim);	
+		k++;
+	} */
+
+	int k=0;
+	while(k<5){
+		new_gen(matrix,new_matrix,dim);
+		print_matrix(new_matrix,dim);
+
+		int *temp=matrix;
+		matrix=new_matrix;
+		new_matrix=temp;
+
+		k++;
+	}
+
+	free(new_matrix);
+	new_matrix=NULL;
 
 // ============ TEST CASES ============
 
@@ -158,6 +207,22 @@ printf("%d\n",state);
 // ----------- Other functions. -------------
 // ==========================================
 
+// A function to print matrices.
+
+void print_matrix(int matrix[],int dim){
+	for(int i=0;i<dim;i++){
+	for(int j=0;j<dim;j++){
+		printf("%d ",matrix[i*dim+j]);
+	}
+		printf("\n");
+	}
+	printf("\n");
+}
+
+
+// A function to count the neighbours of a cell.
+
+
 int count_alive(int matrix[],int dim,int row,int column){
 
 	int alive_counter=0;
@@ -196,3 +261,57 @@ int count_alive(int matrix[],int dim,int row,int column){
  * Reproduction: Any dead cell with exactly three live neighbors becomes a live cell.
  *
  */
+
+// int count_alive(int matrix[],int dim,int row,int column)
+
+// A function to create the next generation.
+
+int* new_gen(int matrix[],int new_matrix[],int dim){
+
+
+/*
+ * Here, we are copying our matrix into a new
+ * matrix to prevent corruption of the original
+ * matrix while applying the game rules.
+ */
+
+
+	for(int i=0;i<dim;i++){
+	for(int j=0;j<dim;j++){
+		new_matrix[i*dim+j]=matrix[i*dim+j];
+	}
+	}
+	
+	
+// Writing the game rules.
+// ------------------------
+
+	for(int i=0;i<dim;i++){
+	for(int j=0;j<dim;j++){
+		int cell=matrix[i*dim+j];
+		
+		/*
+		int *pNew_cell=NULL;
+		*pNew_cell=new_matrix[i*dim+j];
+		*/
+
+		int neighbors=count_alive(matrix,dim,i,j);
+
+		if(neighbors<2){
+			new_matrix[i*dim+j]=0;
+		}
+		if((neighbors==2 || neighbors==3) && cell==1){
+			new_matrix[i*dim+j]=1;
+		}
+		if(neighbors>3){
+			new_matrix[i*dim+j]=0;
+		}
+		if(neighbors==3 && cell==0){
+			new_matrix[i*dim+j]=1;
+		}
+	}
+	}
+	int* matrix_updated=new_matrix;
+
+	return matrix_updated;
+}
