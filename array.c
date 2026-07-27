@@ -25,7 +25,11 @@ int main(){
 		printf("Number of cells out of bounds.\n");
 		return 1;
 	}
+	
+	int gen=0;
+	printf("Enter the number of generations: ");
 
+	scanf("%d",&gen);
 
 // ==========================================
 // --------- Collecting the indices. --------
@@ -124,7 +128,7 @@ int main(){
 	} */
 
 	int k=0;
-	while(k<5){
+	while(k<gen){
 		new_gen(matrix,new_matrix,dim);
 		print_matrix(new_matrix,dim);
 
