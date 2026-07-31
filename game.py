@@ -1,10 +1,10 @@
 import os
 import time
+import sys
 import input_hardcoded as hc
 
-def clear_screen():
-    os.system('cls' if os.name=='nt' else 'clear')
-# time.sleep(3)
+#def clear_screen():
+#    os.system('cls' if os.name=='nt' else 'clear')
 
 def print_matrix(matrix,dim):
     for i in range(dim):
@@ -65,7 +65,7 @@ gen=int(input("Number of generations: "))
 ### and comment the input section out to access hardcoded
 ### indices.
 
-indices=hc.loafer
+indices=hc.pulsar
 
 matrix=[]
 i=0
@@ -86,7 +86,11 @@ while k<gen:
     print_matrix(matrix,dim)
     matrix=new_gen(matrix,dim)
     time.sleep(0.3)
-    clear_screen()
+
+    n=dim
+    m=2*dim-1
+    sys.stdout.write(f"\033[{n}A")
+    sys.stdout.write(f"\033[{m}D")
     k+=1
 
 
